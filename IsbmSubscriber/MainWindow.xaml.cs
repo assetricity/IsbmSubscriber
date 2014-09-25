@@ -11,11 +11,10 @@ namespace IsbmSubscriber
 {
     public partial class MainWindow : Window
     {
-        private ISBMChannelManagementServiceClient _channelClient;
-        private ISBMConsumerPublicationServiceClient _consumerClient;
+        private ChannelManagementServiceClient _channelClient;
+        private ConsumerPublicationServiceClient _consumerClient;
         private Timer _timer;
         private string _sessionId;
-        private string _lastReadMessageId;
 
         public MainWindow()
         {
@@ -24,8 +23,8 @@ namespace IsbmSubscriber
             txtChannel.Text = Properties.Settings.Default.DefaultChannel;
             txtTopic.Text = Properties.Settings.Default.DefaultTopic;
 
-            _channelClient = new ISBMChannelManagementServiceClient();
-            _consumerClient = new ISBMConsumerPublicationServiceClient();
+            _channelClient = new ChannelManagementServiceClient();
+            _consumerClient = new ConsumerPublicationServiceClient();
 
             _timer = new Timer(Properties.Settings.Default.PollInterval);
             _timer.Elapsed += new ElapsedEventHandler(TimerElapsed);
@@ -42,12 +41,10 @@ namespace IsbmSubscriber
                         btnDisconnect.IsEnabled = false;
                     }), null);
 
-                PublicationMessage message = _consumerClient.ReadPublication(_sessionId, _lastReadMessageId);
+                PublicationMessage message = _consumerClient.ReadPublication(_sessionId);
                 if (message != null && message.MessageContent != null)
                 {
                     Log("Received message with id " + message.MessageID);
-
-                    _lastReadMessageId = message.MessageID; 
 
                     string fileName = string.Format("{0} - {1}.xml", DateTime.Now.ToString("yyyyMMddHHmmss"), message.MessageID);
                     using (XmlWriter writer = XmlWriter.Create(fileName))
@@ -55,6 +52,8 @@ namespace IsbmSubscriber
                         Log("Writing message content to file " + fileName);
                         message.MessageContent.WriteTo(writer);
                     }
+
+                    _consumerClient.RemovePublication(_sessionId);
                 }
             }
             catch (Exception ex)
@@ -77,8 +76,8 @@ namespace IsbmSubscriber
             Cursor = Cursors.Wait;
             try
             {
-                Channel channel = _channelClient.GetChannel(txtChannel.Text);
-                _sessionId = _consumerClient.OpenSubscriptionSession(channel.ChannelURI, new List<string> { txtTopic.Text }, null, null, null);
+                //Channel channel = _channelClient.GetChannel(txtChannel.Text);
+                _sessionId = _consumerClient.OpenSubscriptionSession(txtChannel.Text, new List<string> { txtTopic.Text }, null, null, null);
                 Log("Connected to ISBM with session id " + _sessionId);
 
                 btnConnect.Visibility = Visibility.Collapsed;
