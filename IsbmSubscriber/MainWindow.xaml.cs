@@ -56,7 +56,7 @@ namespace IsbmSubscriber
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -86,7 +86,7 @@ namespace IsbmSubscriber
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -103,7 +103,7 @@ namespace IsbmSubscriber
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
