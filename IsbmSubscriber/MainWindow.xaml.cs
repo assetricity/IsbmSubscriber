@@ -11,7 +11,6 @@ namespace IsbmSubscriber
 {
     public partial class MainWindow : Window
     {
-        private ChannelManagementServiceClient _channelClient;
         private ConsumerPublicationServiceClient _consumerClient;
         private Timer _timer;
         private string _sessionId;
@@ -23,7 +22,6 @@ namespace IsbmSubscriber
             txtChannel.Text = Properties.Settings.Default.DefaultChannel;
             txtTopic.Text = Properties.Settings.Default.DefaultTopic;
 
-            _channelClient = new ChannelManagementServiceClient();
             _consumerClient = new ConsumerPublicationServiceClient();
 
             _timer = new Timer(Properties.Settings.Default.PollInterval);
@@ -76,7 +74,6 @@ namespace IsbmSubscriber
             Cursor = Cursors.Wait;
             try
             {
-                //Channel channel = _channelClient.GetChannel(txtChannel.Text);
                 _sessionId = _consumerClient.OpenSubscriptionSession(txtChannel.Text, new List<string> { txtTopic.Text }, null, null, null);
                 Log("Connected to ISBM with session id " + _sessionId);
 
